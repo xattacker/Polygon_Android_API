@@ -361,7 +361,7 @@ public final class PolygonView extends View
 						
 						if (mark._title != null && mark._title.length() > 0)
 						{
-							canvas.drawText(mark._title, mark._position.x,mark._position.y + RegionMark.MARK_RADIUS*2, _paint);
+							canvas.drawText(mark._title, mark._position.x, mark._position.y + RegionMark.MARK_RADIUS*2, _paint);
 						}
 				   }
 				}
