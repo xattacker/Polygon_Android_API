@@ -10,7 +10,7 @@ a Android java Polygon UI View component
 
 ### Setup:
 
-minSdkVersion: 18
+minSdkVersion: 14
 
 ``` 
 allprojects {
