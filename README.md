@@ -6,3 +6,21 @@ a Android java Polygon UI View component
 可透過程式碼組成區塊或是透過json檔匯入區塊資訊呈現畫面<br>
 (json剖析使用 gson library)<br>
 並提供點擊事件呼叫動作
+
+
+### Setup:
+
+minSdkVersion: 18
+
+``` 
+allprojects {
+    repositories {
+        ...
+        jcenter()
+    }
+}
+
+dependencies {
+    implementation 'com.xattacker.android:Polygon:1.0.0'
+}
+``` 
