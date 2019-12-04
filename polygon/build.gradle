@@ -1,5 +1,7 @@
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
+apply plugin: 'com.novoda.bintray-release' // for jCenter uploading
+
 
 android {
     compileSdkVersion 28
@@ -8,10 +10,7 @@ android {
         minSdkVersion 14
         targetSdkVersion 28
         versionCode 1
-        versionName "1.0"
-
-        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-
+        versionName "1.0.0"
     }
 
     buildTypes {
@@ -27,4 +26,14 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation 'com.google.code.gson:gson:2.8.5'
     api "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}
+
+// for jCenter uploading
+publish {
+    userOrg = 'xattacker'        //bintray.com用户名
+    groupId = 'com.xattacker.android'    //jcenter上的路径
+    artifactId = 'PolygonMap'   //项目名称
+    publishVersion = '1.0.0'//版本号
+    desc = 'Android Polygon UI component library'//描述，自由填写
+    website = 'https://github.com/xattacker/Polygon_Android_API' // 网址，自由填写
 }
