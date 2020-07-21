@@ -3,9 +3,8 @@ a Android kotlin Polygon UI View component
 
 present a custom defined polygon view:<br>
 <img src="/rm_res/cut1.png" alt="图片替换文本" width="50%" height="50%" align="bottom" /><br><br>
-The API could load data from code for json file.<br>
-(json parsing with gson library)<br>
-And supports event callback
+The API could load data from code for json file(json parsing with gson library)
+<br>and supports event callback
 
 
 ### Setup:
