@@ -20,12 +20,14 @@ class MainActivity : AppCompatActivity(), PolygonViewListener
         try
         {
             _polygonView = this.findViewById<View>(R.id.view_polygon) as PolygonView
-            _polygonView?.setFitToCenter(true)
-            _polygonView?.setListener(this)
+            _polygonView?.fitToCenter = true
+            _polygonView?.listener = this
 
             // map from json resource
             val map = PolygonMap.parseFromJson(this, R.raw.region)
-            _polygonView?.loadMap(map)
+            map?.let {
+                _polygonView?.loadMap(it)
+            }
         }
         catch (ex: Exception)
         {

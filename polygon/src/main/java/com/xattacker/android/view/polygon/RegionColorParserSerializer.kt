@@ -12,20 +12,26 @@ import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 
-internal class RegionColorParserSerializer : JsonSerializer<RegionColor>, JsonDeserializer<RegionColor> {
+internal class RegionColorParserSerializer : JsonSerializer<RegionColor>, JsonDeserializer<RegionColor>
+{
     @Throws(JsonParseException::class)
-    override fun deserialize(aElem: JsonElement, aArg1: Type, aArg2: JsonDeserializationContext): RegionColor {
+    override fun deserialize(aElem: JsonElement, aArg1: Type, aArg2: JsonDeserializationContext): RegionColor
+    {
         val color = RegionColor()
 
-        try {
+        try
+        {
             color._color = Color.parseColor(aElem.asString)
-        } catch (th: Throwable) {
+        }
+        catch (th: Throwable)
+        {
         }
 
         return color
     }
 
-    override fun serialize(aColor: RegionColor, aArg1: Type, aArg2: JsonSerializationContext): JsonElement {
+    override fun serialize(aColor: RegionColor, aArg1: Type, aArg2: JsonSerializationContext): JsonElement
+    {
         return JsonPrimitive("#" + aColor.rgbStr)
     }
 }

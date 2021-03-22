@@ -36,7 +36,7 @@ class PolygonRegion {
 
     val central: PointF
         get() {
-            val size = _points!!.size
+            val size = _points?.size ?: 0
             var central_x = 0f
             var central_y = 0f
 
@@ -59,10 +59,8 @@ class PolygonRegion {
         _titleInfo._position = aPosition
     }
 
-    fun addPoint(aPoint: PointF?) {
-        if (aPoint != null && _points != null) {
-            _points!!.add(aPoint)
-        }
+    fun addPoint(aPoint: PointF) {
+        _points?.add(aPoint)
     }
 
     fun isPointInRegion(aPoint: PointF): Boolean {
@@ -102,15 +100,13 @@ class PolygonRegion {
         return inside
     }
 
-    fun addMark(aMark: RegionMark?) {
-        if (aMark != null && _marks != null) {
-            _marks!!.add(aMark)
-        }
+    fun addMark(aMark: RegionMark) {
+        _marks?.add(aMark)
+
     }
 
-    fun hasMark(): Boolean {
-        return _marks != null && !_marks!!.isEmpty()
-    }
+    val hasMark: Boolean
+     get() = _marks?.isEmpty() == false
 
 
     internal inner class TitleInfo {

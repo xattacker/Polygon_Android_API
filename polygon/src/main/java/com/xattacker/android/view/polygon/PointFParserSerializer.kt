@@ -13,9 +13,11 @@ import com.google.gson.JsonPrimitive
 import com.google.gson.JsonSerializationContext
 import com.google.gson.JsonSerializer
 
-internal class PointFParserSerializer : JsonSerializer<PointF>, JsonDeserializer<PointF> {
+internal class PointFParserSerializer : JsonSerializer<PointF>, JsonDeserializer<PointF>
+{
     @Throws(JsonParseException::class)
-    override fun deserialize(aElem: JsonElement, aArg1: Type, aArg2: JsonDeserializationContext): PointF {
+    override fun deserialize(aElem: JsonElement, aArg1: Type, aArg2: JsonDeserializationContext): PointF
+    {
         val obj = aElem as JsonObject
 
         val point = PointF(0f, 0f)
@@ -25,7 +27,8 @@ internal class PointFParserSerializer : JsonSerializer<PointF>, JsonDeserializer
         return point
     }
 
-    override fun serialize(aPoint: PointF, aArg1: Type, aArg2: JsonSerializationContext): JsonElement {
+    override fun serialize(aPoint: PointF, aArg1: Type, aArg2: JsonSerializationContext): JsonElement
+    {
         val obj = JsonObject()
         obj.add("x", JsonPrimitive(aPoint.x))
         obj.add("y", JsonPrimitive(aPoint.y))

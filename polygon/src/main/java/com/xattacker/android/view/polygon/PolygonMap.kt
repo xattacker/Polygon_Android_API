@@ -8,7 +8,8 @@ import com.xattacker.json.JsonBuilderVisitor
 import com.xattacker.json.JsonUtility
 import java.util.*
 
-class PolygonMap {
+class PolygonMap
+{
     @SerializedName("width")
     var width: Int = 0
 
@@ -43,9 +44,9 @@ class PolygonMap {
         }
 
     var highlightMarkColor: Int
-        get() = _highlightMarkColor!!._color
+        get() = _highlightMarkColor?._color ?: 0
         set(aHighlightColor) {
-            _highlightMarkColor!!._color = aHighlightColor
+            _highlightMarkColor?._color = aHighlightColor
         }
 
     var titleColor: Int
@@ -54,7 +55,8 @@ class PolygonMap {
             _titleColor._color = aTitleColor
         }
 
-    init {
+    init
+    {
         _borderColor = RegionColor()
         _highlightColor = RegionColor()
         _titleColor = RegionColor()
@@ -62,13 +64,14 @@ class PolygonMap {
         regions = ArrayList()
     }
 
-    fun toJson(): String {
+    fun toJson(): String
+    {
         val gson = JsonUtility.createGson(createBuilderAdapter())
         return gson.toJson(this)
     }
 
-    companion object {
-
+    companion object
+    {
         @Throws(Exception::class)
         fun parseFromJson(aContext: Context, aRes: Int): PolygonMap? {
 
@@ -82,14 +85,14 @@ class PolygonMap {
 
         private fun createBuilderAdapter(): JsonBuilderVisitor
         {
-            var visitor = object : JsonBuilderVisitor
-            {
-                override fun onBuilderPrepared(aBuilder: GsonBuilder)
-                {
-                    aBuilder.registerTypeAdapter(PointF::class.java, PointFParserSerializer())
-                    aBuilder.registerTypeAdapter(RegionColor::class.java, RegionColorParserSerializer())
-                }
-            }
+            val visitor = object : JsonBuilderVisitor
+                                {
+                                    override fun onBuilderPrepared(aBuilder: GsonBuilder)
+                                    {
+                                        aBuilder.registerTypeAdapter(PointF::class.java, PointFParserSerializer())
+                                        aBuilder.registerTypeAdapter(RegionColor::class.java, RegionColorParserSerializer())
+                                    }
+                                }
 
             return visitor
         }
