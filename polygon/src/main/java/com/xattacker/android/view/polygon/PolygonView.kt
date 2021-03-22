@@ -252,9 +252,9 @@ class PolygonView : View
     }
 
     override fun onDraw(canvas: Canvas) {
-        if (_regions != null && !_regions!!.isEmpty()) {
+        if (_regions?.isEmpty() == false) {
             for (region in _regions!!) {
-                if (!region._points!!.isEmpty()) {
+                if (region._points?.isEmpty() == false) {
                     // draw region area
                     _paint.style = Paint.Style.FILL
                     _paint.color = region.regionColor
@@ -312,12 +312,11 @@ class PolygonView : View
     {
         for (region in _regions!!)
         {
-            if (!region._points!!.isEmpty())
+            if (region._points?.isEmpty() == false)
             {
                 var point: PointF?
-
                 var i = 0
-                val size = region._points!!.size
+                val size = region._points?.size ?: 0
 
                 while (i < size)
                 {
