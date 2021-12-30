@@ -338,7 +338,7 @@ class PolygonView : View
         }
     }
 
-    private fun fitCenter(aOffsetX: Float, aOffsetY: Float)
+    private fun fitCenter(offsetX: Float, offsetY: Float)
     {
         _regions?.let {
             regions ->
@@ -347,15 +347,15 @@ class PolygonView : View
                 region.points?.let {
                     for (point in it)
                     {
-                        point.x += aOffsetX
-                        point.y += aOffsetY
+                        point.x += offsetX
+                        point.y += offsetY
                     }
 
                     val point = region.titleInfo.position
                     if (point.x >= 0 && point.y >= 0)
                     {
-                        point.x += aOffsetX
-                        point.y += aOffsetY
+                        point.x += offsetX
+                        point.y += offsetY
                     }
                 }
 
@@ -364,8 +364,8 @@ class PolygonView : View
                     for (mark in marks)
                     {
                         val point = mark.position
-                        point.x += aOffsetX
-                        point.y += aOffsetY
+                        point.x += offsetX
+                        point.y += offsetY
                     }
                 }
             }
