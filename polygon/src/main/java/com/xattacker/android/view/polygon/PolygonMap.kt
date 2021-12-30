@@ -1,10 +1,10 @@
 package com.xattacker.android.view.polygon
 
 import android.content.Context
+import android.graphics.Color
 import android.graphics.PointF
 import com.google.gson.GsonBuilder
 import com.google.gson.annotations.SerializedName
-import com.xattacker.json.JsonBuilderVisitor
 import com.xattacker.json.JsonUtility
 import java.util.*
 
@@ -32,27 +32,28 @@ class PolygonMap
     val regions: ArrayList<PolygonRegion>
 
     var borderColor: Int
-        get() = _borderColor._color
+        get() = _borderColor.color
         set(aBorderColor) {
-            _borderColor._color = aBorderColor
+            _borderColor.color = aBorderColor
         }
 
     var highlightColor: Int
-        get() = _highlightColor._color
-        set(aHighlightColor) {
-            _highlightColor._color = aHighlightColor
+        get() = _highlightColor.color
+        set(aHighlightColor)
+        {
+            _highlightColor.color = aHighlightColor
         }
 
     var highlightMarkColor: Int
-        get() = _highlightMarkColor?._color ?: 0
+        get() = _highlightMarkColor?.color ?: Color.TRANSPARENT
         set(aHighlightColor) {
-            _highlightMarkColor?._color = aHighlightColor
+            _highlightMarkColor?.color = aHighlightColor
         }
 
     var titleColor: Int
-        get() = _titleColor._color
+        get() = _titleColor.color
         set(aTitleColor) {
-            _titleColor._color = aTitleColor
+            _titleColor.color = aTitleColor
         }
 
     init
@@ -64,35 +65,31 @@ class PolygonMap
         regions = ArrayList()
     }
 
-    fun toJson(): String
-    {
-        val gson = JsonUtility.createGson(createBuilderAdapter())
+    fun toJson(): String {
+        val gson = JsonUtility.createGson(createBuilderVisitor())
         return gson.toJson(this)
     }
 
     companion object
     {
         @Throws(Exception::class)
-        fun parseFromJson(aContext: Context, aRes: Int): PolygonMap? {
-
+        fun parseFromJson(context: Context, aRes: Int): PolygonMap?
+        {
             return JsonUtility.fromJsonRes<PolygonMap>(
-                    aContext,
+                    context,
                     aRes,
                     PolygonMap::class.java,
-                    createBuilderAdapter()
-            )
+                    createBuilderVisitor()
+                    )
         }
 
-        private fun createBuilderAdapter(): JsonBuilderVisitor
+        private fun createBuilderVisitor(): (builder: GsonBuilder) -> Unit
         {
-            val visitor = object : JsonBuilderVisitor
-                                {
-                                    override fun onBuilderPrepared(aBuilder: GsonBuilder)
-                                    {
-                                        aBuilder.registerTypeAdapter(PointF::class.java, PointFParserSerializer())
-                                        aBuilder.registerTypeAdapter(RegionColor::class.java, RegionColorParserSerializer())
-                                    }
-                                }
+            val visitor: (builder: GsonBuilder) -> Unit = {
+                                builder: GsonBuilder ->
+                                builder.registerTypeAdapter(PointF::class.java, PointFParserSerializer())
+                                builder.registerTypeAdapter(RegionColor::class.java, RegionColorParserSerializer())
+                            }
 
             return visitor
         }

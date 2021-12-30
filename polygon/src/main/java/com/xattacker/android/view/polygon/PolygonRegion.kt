@@ -11,113 +11,130 @@ class PolygonRegion {
     var id: String? = null
 
     @SerializedName("title_info")
-    internal var _titleInfo: TitleInfo
+    internal var titleInfo: TitleInfo
 
     @SerializedName("color")
     private val _regionColor: RegionColor
 
     @SerializedName("points")
-    internal var _points: ArrayList<PointF>? = null
+    internal var points: ArrayList<PointF>? = null
 
     @SerializedName("marks")
-    internal var _marks: ArrayList<RegionMark>? = null
+    internal var marks: ArrayList<RegionMark>? = null
 
     var title: String?
-        get() = _titleInfo.title
-        set(aTitle) {
-            _titleInfo.title = aTitle
+        get() = titleInfo.title
+        set(aTitle)
+        {
+            titleInfo.title = aTitle
         }
 
     var regionColor: Int
-        get() = _regionColor._color
+        get() = _regionColor.color
         set(aColor) {
-            _regionColor._color = aColor
+            _regionColor.color = aColor
         }
 
     val central: PointF
         get() {
-            val size = _points?.size ?: 0
+            val size = points?.size ?: 0
             var central_x = 0f
             var central_y = 0f
 
-            for (point in _points!!) {
-                central_x += point.x
-                central_y += point.y
+            this.points?.let {
+                for (point in it)
+                {
+                    central_x += point.x
+                    central_y += point.y
+                }
             }
 
             return PointF(central_x / size, central_y / size)
         }
 
-    init {
-        _titleInfo = TitleInfo()
+    init
+    {
+        titleInfo = TitleInfo()
         _regionColor = RegionColor()
-        _points = ArrayList()
-        _marks = ArrayList()
+        points = ArrayList()
+        marks = ArrayList()
     }
 
-    fun setTitlePosition(aPosition: PointF) {
-        _titleInfo._position = aPosition
+    fun setTitlePosition(position: PointF)
+    {
+        titleInfo.position = position
     }
 
-    fun addPoint(aPoint: PointF) {
-        _points?.add(aPoint)
+    fun addPoint(point: PointF) {
+        points?.add(point)
     }
 
-    fun isPointInRegion(aPoint: PointF): Boolean {
-        var inside = false
-        var point = _points!![0]
-        val size = _points!!.size
-        var minX = point.x.toDouble()
-        var maxX = point.x.toDouble()
-        var minY = point.y.toDouble()
-        var maxY = point.y.toDouble()
+    fun isPointInRegion(point: PointF): Boolean {
 
-        for (i in 1 until size) {
-            point = _points!![i]
-            minX = Math.min(point.x.toDouble(), minX)
-            maxX = Math.max(point.x.toDouble(), maxX)
-            minY = Math.min(point.y.toDouble(), minY)
-            maxY = Math.max(point.y.toDouble(), maxY)
+        val points = this.points
+        if (points == null || points.isEmpty())
+        {
+            return false
         }
 
-        if (aPoint.x < minX || aPoint.x > maxX || aPoint.y < minY || aPoint.y > maxY) {
+
+        var inside = false
+        val size = points.size
+        var temp_p = points[0]
+        var minX = temp_p.x.toDouble()
+        var maxX = temp_p.x.toDouble()
+        var minY = temp_p.y.toDouble()
+        var maxY = temp_p.y.toDouble()
+
+        for (i in 1 until size)
+        {
+            temp_p = points[i]
+            minX = Math.min(temp_p.x.toDouble(), minX)
+            maxX = Math.max(temp_p.x.toDouble(), maxX)
+            minY = Math.min(temp_p.y.toDouble(), minY)
+            maxY = Math.max(temp_p.y.toDouble(), maxY)
+        }
+
+        if (point.x < minX || point.x > maxX || point.y < minY || point.y > maxY)
+        {
             return false
         }
 
         // http://www.ecse.rpi.edu/Homepages/wrf/Research/Short_Notes/pnpoly.html
         var i = 0
         var j = size - 1
-        while (i < size) {
-            val p1 = _points!![i]
-            val p2 = _points!![j]
+        while (i < size)
+        {
+            val p1 = points[i]
+            val p2 = points[j]
 
-            if (p1.y > aPoint.y != p2.y > aPoint.y && aPoint.x < (p2.x - p1.x) * (aPoint.y - p1.y) / (p2.y - p1.y) + p1.x) {
+            if (p1.y > point.y != p2.y > point.y &&
+                point.x < (p2.x - p1.x) * (point.y - p1.y) / (p2.y - p1.y) + p1.x)
+            {
                 inside = !inside
             }
+
             j = i++
         }
 
         return inside
     }
 
-    fun addMark(aMark: RegionMark) {
-        _marks?.add(aMark)
-
+    fun addMark(mark: RegionMark)
+    {
+        marks?.add(mark)
     }
 
     val hasMark: Boolean
-     get() = _marks?.isEmpty() == false
+     get() = marks?.isEmpty() == false
 
 
-    internal inner class TitleInfo {
+    internal inner class TitleInfo
+    {
         @SerializedName("title")
         var title: String? = null
 
         @SerializedName("position")
-        var _position: PointF
-
-        init {
-            _position = PointF(-1f, -1f)
-        }
+        var position: PointF = PointF(-1f, -1f)
     }
 }

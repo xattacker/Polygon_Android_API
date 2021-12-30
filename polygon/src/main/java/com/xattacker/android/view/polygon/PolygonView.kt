@@ -9,6 +9,8 @@ import android.view.MotionEvent
 import android.view.View
 import java.lang.ref.WeakReference
 import java.util.*
+import kotlin.math.max
+import kotlin.math.min
 
 class PolygonView : View
 {
@@ -125,7 +127,7 @@ class PolygonView : View
                         {
                             var hit = false
 
-                            for (mark in region._marks!!)
+                            for (mark in region.marks!!)
                             {
                                 if (mark.isPointInMark(point)) {
                                     _clickedMark = mark
@@ -208,55 +210,53 @@ class PolygonView : View
                 var max_y = 0f
                 val ratio = if (_ratioW > _ratioH) _ratioH else _ratioW
 
-                for (region in _regions!!) {
-                    if (region._points?.isEmpty() == false)
+                _regions?.let {
+                    regions ->
+                    for (region in regions)
                     {
-                        for (point in region._points!!) {
-                            point.x *= ratio
-                            point.y *= ratio
+                        region.points?.let {
+                            points ->
+                            for (point in points)
+                            {
+                                point.x *= ratio
+                                point.y *= ratio
 
-                            if (this.fitToCenter) {
-                                if (min_x > point.x) {
-                                    min_x = point.x
-                                } else if (max_x < point.x) {
-                                    max_x = point.x
-                                }
+                                if (this.fitToCenter)
+                                {
+                                    min_x = min(min_x, point.x)
+                                    max_x = max(max_x, point.x)
 
-                                if (min_y > point.y) {
-                                    min_y = point.y
-                                } else if (max_y < point.y) {
-                                    max_y = point.y
+                                    min_y = min(min_y, point.y)
+                                    max_y = max(max_y, point.y)
                                 }
+                            }
+
+                            val point = region.titleInfo.position
+                            if (point.x >= 0 && point.y >= 0)
+                            {
+                                point.x *= ratio
+                                point.y *= ratio
                             }
                         }
 
-                        val point = region._titleInfo._position
-                        if (point.x >= 0 && point.y >= 0)
-                        {
-                            point.x *= ratio
-                            point.y *= ratio
-                        }
-                    }
-
-
-                    region._marks?.let {
-                        marks ->
-                        for (mark in marks)
-                        {
-                            val point = mark.position
-                            point.x *= ratio
-                            point.y *= ratio
+                        region.marks?.let {
+                            marks ->
+                            for (mark in marks)
+                            {
+                                val point = mark.position
+                                point.x *= ratio
+                                point.y *= ratio
+                            }
                         }
                     }
                 }
-
 
                 if (this.fitToCenter)
                 {
                     val offset_x = width / 2 - (max_x + min_x) / 2
                     val offset_y = height / 2 - (max_y + min_y) / 2
-
-                    if (offset_x != 0f || offset_y != 0f) {
+                    if (offset_x != 0f || offset_y != 0f)
+                    {
                         fitCenter(offset_x, offset_y)
                     }
                 }
@@ -266,62 +266,66 @@ class PolygonView : View
 
     override fun onDraw(canvas: Canvas)
     {
-        if (_regions?.isEmpty() == false)
+        val regions = _regions
+        if (regions == null || regions.isEmpty())
         {
-            for (region in _regions!!)
+            return
+        }
+
+
+        for (region in regions)
+        {
+            val points = region.points
+            if (points?.isEmpty() == false)
             {
-                val points = region._points
-                if (points?.isEmpty() == false)
+                // draw region area
+                _paint.style = Paint.Style.FILL
+                _paint.color = region.regionColor
+                drawPath(canvas, points)
+
+                if (_clickedRegion == region)
                 {
-                    // draw region area
-                    _paint.style = Paint.Style.FILL
-                    _paint.color = region.regionColor
+                    _paint.color = highlightColor
                     drawPath(canvas, points)
-
-                    if (_clickedRegion == region)
-                    {
-                        _paint.color = highlightColor
-                        drawPath(canvas, points)
-                    }
-
-                    // draw region border
-                    _paint.style = Paint.Style.STROKE
-                    _paint.color = borderColor
-                    drawPath(canvas, points)
-
-                    if (region._titleInfo.title?.length ?: 0 > 0) {
-                        // draw region title
-                        var p = region._titleInfo._position
-                        if (p.x < 0 && p.y < 0)
-                        {
-                            p = region.central
-                        }
-
-                        _paint.textAlign = Align.CENTER
-                        _paint.color = titleColor
-                        _paint.textSize = titleFontSize
-                        canvas.drawText(region._titleInfo.title ?: "", p.x, p.y, _paint)
-                    }
                 }
 
+                // draw region border
+                _paint.style = Paint.Style.STROKE
+                _paint.color = borderColor
+                drawPath(canvas, points)
 
-                region._marks?.let {
-                    marks ->
-                    // draw region mark
-                    _paint.style = Style.FILL
-                    _paint.textAlign = Align.CENTER
-                    _paint.textSize = titleFontSize
-
-                    for (mark in marks)
+                if (region.titleInfo.title?.length ?: 0 > 0) {
+                    // draw region title
+                    var p = region.titleInfo.position
+                    if (p.x < 0 && p.y < 0)
                     {
-                        _paint.color = if (_clickedMark != null && _clickedMark == mark) highlightMarkColor else mark.color!!._color
-                        canvas.drawCircle(mark.position.x, mark.position.y, RegionMark.MARK_RADIUS, _paint)
+                        p = region.central
+                    }
 
-                        val title = mark.title
-                        if ( title?.length ?: 0 > 0)
-                        {
-                            canvas.drawText(title ?: "", mark.position.x, mark.position.y + RegionMark.MARK_RADIUS * 2, _paint)
-                        }
+                    _paint.textAlign = Align.CENTER
+                    _paint.color = titleColor
+                    _paint.textSize = titleFontSize
+                    canvas.drawText(region.titleInfo.title ?: "", p.x, p.y, _paint)
+                }
+            }
+
+
+            region.marks?.let {
+                marks ->
+                // draw region mark
+                _paint.style = Style.FILL
+                _paint.textAlign = Align.CENTER
+                _paint.textSize = titleFontSize
+
+                for (mark in marks)
+                {
+                    _paint.color = if (_clickedMark != null && _clickedMark == mark) highlightMarkColor else mark.color?.color ?: Color.TRANSPARENT
+                    canvas.drawCircle(mark.position.x, mark.position.y, RegionMark.MARK_RADIUS, _paint)
+
+                    val title = mark.title
+                    if ( title?.length ?: 0 > 0)
+                    {
+                        canvas.drawText(title ?: "", mark.position.x, mark.position.y + RegionMark.MARK_RADIUS * 2, _paint)
                     }
                 }
             }
@@ -334,15 +338,15 @@ class PolygonView : View
             regions ->
             for (region in regions)
             {
-                if (region._points?.isEmpty() == false)
+                if (region.points?.isEmpty() == false)
                 {
-                    for (point in region._points!!)
+                    for (point in region.points!!)
                     {
                         point.x += aOffsetX
                         point.y += aOffsetY
                     }
 
-                    val point = region._titleInfo._position
+                    val point = region.titleInfo.position
                     if (point.x >= 0 && point.y >= 0)
                     {
                         point.x += aOffsetX
@@ -350,7 +354,7 @@ class PolygonView : View
                     }
                 }
 
-                region._marks?.let {
+                region.marks?.let {
                     marks ->
                     for (mark in marks)
                     {

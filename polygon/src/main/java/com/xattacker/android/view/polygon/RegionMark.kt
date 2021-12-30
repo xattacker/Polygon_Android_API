@@ -20,15 +20,15 @@ class RegionMark
 
     internal var _belongRegion: PolygonRegion? = null
 
-    fun isPointInMark(aPoint: PointF): Boolean
+    fun isPointInMark(point: PointF): Boolean
     {
         var hit = false
         val size = MARK_RADIUS * 2
         val tl = PointF(position.x - size, position.y - size)
         val br = PointF(position.x + size, position.y + size)
 
-        if (aPoint.x >= tl.x && aPoint.x <= br.x &&
-                aPoint.y >= tl.y && aPoint.y <= br.y)
+        if (point.x >= tl.x && point.x <= br.x &&
+            point.y >= tl.y && point.y <= br.y)
         {
             hit = true
         }

@@ -21,7 +21,7 @@ internal class RegionColorParserSerializer : JsonSerializer<RegionColor>, JsonDe
 
         try
         {
-            color._color = Color.parseColor(aElem.asString)
+            color.color = Color.parseColor(aElem.asString)
         }
         catch (th: Throwable)
         {
