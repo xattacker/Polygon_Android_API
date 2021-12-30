@@ -114,28 +114,32 @@ class PolygonView : View
         }
 
 
-        if (_regions?.isEmpty() == false)
+        val regions = _regions
+        if (regions != null && !regions.isEmpty())
         {
             val point = PointF(event.x, event.y)
 
             when (event.action) {
                 MotionEvent.ACTION_DOWN ->
                 {
-                    for (region in _regions!!)
+                    for (region in regions)
                     {
                         if (region.hasMark)
                         {
                             var hit = false
 
-                            for (mark in region.marks!!)
-                            {
-                                if (mark.isPointInMark(point)) {
-                                    _clickedMark = mark
-                                    _clickedMark?._belongRegion = region
-                                    invalidate()
-                                    hit = true
+                            region.marks?.let {
+                                for (mark in it)
+                                {
+                                    if (mark.isPointInMark(point))
+                                    {
+                                        _clickedMark = mark
+                                        _clickedMark?._belongRegion = region
+                                        invalidate()
+                                        hit = true
 
-                                    break
+                                        break
+                                    }
                                 }
                             }
 
@@ -194,71 +198,73 @@ class PolygonView : View
     {
         super.onLayout(changed, l, t, r, b)
 
-        if (_baseWidth != 0 && _baseHeight != 0)
+        if (_baseWidth == 0 || _baseHeight == 0)
         {
-            val ratio_w = width.toFloat() / _baseWidth.toFloat()
-            val ratio_h = height.toFloat() / _baseHeight.toFloat()
+            return
+        }
 
-            if (ratio_w != _ratioW || ratio_h != _ratioH)
-            {
-                _ratioW = ratio_w
-                _ratioH = ratio_h
 
-                var min_x = width.toFloat()
-                var min_y = height.toFloat()
-                var max_x = 0f
-                var max_y = 0f
-                val ratio = if (_ratioW > _ratioH) _ratioH else _ratioW
+        val ratio_w = width.toFloat() / _baseWidth.toFloat()
+        val ratio_h = height.toFloat() / _baseHeight.toFloat()
+        if (ratio_w != _ratioW || ratio_h != _ratioH)
+        {
+            _ratioW = ratio_w
+            _ratioH = ratio_h
 
-                _regions?.let {
-                    regions ->
-                    for (region in regions)
-                    {
-                        region.points?.let {
-                            points ->
-                            for (point in points)
+            var min_x = width.toFloat()
+            var min_y = height.toFloat()
+            var max_x = 0f
+            var max_y = 0f
+            val ratio = if (_ratioW > _ratioH) _ratioH else _ratioW
+
+            _regions?.let {
+                regions ->
+                for (region in regions)
+                {
+                    region.points?.let {
+                        points ->
+                        for (point in points)
+                        {
+                            point.x *= ratio
+                            point.y *= ratio
+
+                            if (this.fitToCenter)
                             {
-                                point.x *= ratio
-                                point.y *= ratio
+                                min_x = min(min_x, point.x)
+                                max_x = max(max_x, point.x)
 
-                                if (this.fitToCenter)
-                                {
-                                    min_x = min(min_x, point.x)
-                                    max_x = max(max_x, point.x)
-
-                                    min_y = min(min_y, point.y)
-                                    max_y = max(max_y, point.y)
-                                }
-                            }
-
-                            val point = region.titleInfo.position
-                            if (point.x >= 0 && point.y >= 0)
-                            {
-                                point.x *= ratio
-                                point.y *= ratio
+                                min_y = min(min_y, point.y)
+                                max_y = max(max_y, point.y)
                             }
                         }
 
-                        region.marks?.let {
-                            marks ->
-                            for (mark in marks)
-                            {
-                                val point = mark.position
-                                point.x *= ratio
-                                point.y *= ratio
-                            }
+                        val point = region.titleInfo.position
+                        if (point.x >= 0 && point.y >= 0)
+                        {
+                            point.x *= ratio
+                            point.y *= ratio
+                        }
+                    }
+
+                    region.marks?.let {
+                        marks ->
+                        for (mark in marks)
+                        {
+                            val point = mark.position
+                            point.x *= ratio
+                            point.y *= ratio
                         }
                     }
                 }
+            }
 
-                if (this.fitToCenter)
+            if (this.fitToCenter)
+            {
+                val offset_x = width / 2 - (max_x + min_x) / 2
+                val offset_y = height / 2 - (max_y + min_y) / 2
+                if (offset_x != 0f || offset_y != 0f)
                 {
-                    val offset_x = width / 2 - (max_x + min_x) / 2
-                    val offset_y = height / 2 - (max_y + min_y) / 2
-                    if (offset_x != 0f || offset_y != 0f)
-                    {
-                        fitCenter(offset_x, offset_y)
-                    }
+                    fitCenter(offset_x, offset_y)
                 }
             }
         }
@@ -338,9 +344,8 @@ class PolygonView : View
             regions ->
             for (region in regions)
             {
-                if (region.points?.isEmpty() == false)
-                {
-                    for (point in region.points!!)
+                region.points?.let {
+                    for (point in it)
                     {
                         point.x += aOffsetX
                         point.y += aOffsetY
