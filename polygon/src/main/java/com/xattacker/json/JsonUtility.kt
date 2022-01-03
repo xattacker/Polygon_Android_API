@@ -10,7 +10,7 @@ import com.google.gson.reflect.TypeToken
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 
-object JsonUtility
+internal object JsonUtility
 {
     @JvmOverloads
     fun createGson(aVisitor: ((builder: GsonBuilder) -> Unit)? = null): Gson
