@@ -23,6 +23,6 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.github.xattacker:Polygon:1.0.0'
+    implementation 'com.github.xattacker:Polygon_Android_API:1.0.0'
 }
 ``` 
