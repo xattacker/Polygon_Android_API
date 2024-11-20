@@ -11,17 +11,18 @@ The API could load data from code for json file(json parsing with gson library)
 
 ### Setup:
 
-minSdkVersion: 14 [ ![Download](https://api.bintray.com/packages/xattacker/maven/PolygonMap/images/download.svg?version=1.0.0) ](https://bintray.com/xattacker/maven/PolygonMap/1.0.0/link)
+minSdkVersion: 14 
 
 ``` 
 allprojects {
     repositories {
         ...
-        jcenter()
+		mavenCentral()
+		maven { url 'https://jitpack.io' }
     }
 }
 
 dependencies {
-    implementation 'com.xattacker.android:Polygon:1.0.0'
+    implementation 'com.github.xattacker:Polygon:1.0.0'
 }
 ``` 
